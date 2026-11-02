@@ -98,3 +98,27 @@ python -m caller                 # birinchi marta telefon raqam va SMS kod so'ra
 
 ⚠️ `data/my_account.session` faylini hech kimga bermang — bu akkauntingizga to'liq kirish kaliti.
 Userbotlardan me'yorida foydalaning (spam qo'ng'iroqlar akkaunt bloklanishiga olib kelishi mumkin).
+
+## 📱 Kompyutersiz — Android telefonda ishga tushirish (bepul)
+
+1. **F-Droid** dan **Termux** ni o'rnating (Play Market versiyasi eskirgan): https://f-droid.org/packages/com.termux/
+2. Termux'da:
+   ```bash
+   pkg update -y && pkg install -y proot-distro
+   proot-distro install ubuntu
+   proot-distro login ubuntu
+   ```
+3. Ubuntu ichida:
+   ```bash
+   apt update && apt install -y git
+   git clone -b claude/telegram-qobgiroq-agent-bot-fvw3ao https://github.com/asadbekmaxmudov593-cpu/UZB_DENZE
+   cd UZB_DENZE
+   bash scripts/termux_setup.sh
+   nano .env          # API_ID, API_HASH, CALL_CONTACTS=ada:@username  (saqlash: Ctrl+O, Enter, Ctrl+X)
+   . .venv/bin/activate
+   python -m caller   # telefon raqam va Telegram kodini kiriting
+   ```
+4. Ishlayotgan paytda Termux'ni yopmang. Bildirishnomada **«Acquire wakelock»** ni bosing, telefon sozlamalarida Termux uchun batareya cheklovini o'chiring.
+
+Keyingi safar: Termux → `proot-distro login ubuntu` → `cd UZB_DENZE && . .venv/bin/activate && python -m caller`.
+Repo **private** bo'lsa, `git clone` parol so'raydi — GitHub *Personal access token* kiriting yoki repoini public qiling.
