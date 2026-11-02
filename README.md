@@ -59,3 +59,42 @@ bot/
     agent.py       # agent amallari
     admin.py       # admin buyruqlari
 ```
+
+---
+
+# 🔊 Akkauntdan qo'ng'iroq qilib, matnni o'zbekcha o'qib beruvchi userbot
+
+`caller/` — **sizning shaxsiy Telegram akkauntingizdan** (oddiy bot qo'ng'iroq qila olmaydi) kontaktga ovozli qo'ng'iroq qiladi va yozgan matningizni o'zbekcha ovozda o'qib beradi.
+
+Bepul vositalar:
+- [Telethon](https://github.com/LonamiWebs/Telethon) — akkauntga ulanish (API_ID/API_HASH bepul: https://my.telegram.org)
+- [py-tgcalls](https://github.com/pytgcalls/pytgcalls) — Telegram ovozli qo'ng'iroq
+- [edge-tts](https://github.com/rany2/edge-tts) — bepul o'zbekcha ovoz (`uz-UZ-SardorNeural` erkak, `uz-UZ-MadinaNeural` ayol)
+- ffmpeg
+
+## Ishlatish
+
+«**Saqlangan xabarlar**» (Saved Messages) ga yozasiz:
+
+```
+ada yangi agent bot yaratdim
+```
+
+Natija: `CALL_CONTACTS` dagi **ada** ga qo'ng'iroq qilinadi, u javob berganda ovozda o'qiladi:
+> «Assalomu alaykum, ada! Yangi agent bot yaratdim. Yana bir bor takrorlayman. Yangi agent bot yaratdim. Xayr, salomat bo'ling!»
+
+Holat (qo'ng'iroq qilinmoqda / javob bermadi / o'qib berildi) shu yerning o'zida ko'rsatiladi.
+Birinchi so'z — kontakt taxallusi, qolgani — o'qiladigan matn. Bir nechta kontakt qo'shsa bo'ladi:
+`CALL_CONTACTS=ada:@ada_username,oyi:+998901234567`
+
+## O'rnatish
+
+```bash
+sudo apt install ffmpeg          # Windows: ffmpeg.org dan yuklab PATH ga qo'shing
+pip install -r requirements.txt -r requirements-caller.txt
+cp .env.example .env             # API_ID, API_HASH, CALL_CONTACTS ni to'ldiring
+python -m caller                 # birinchi marta telefon raqam va SMS kod so'raladi
+```
+
+⚠️ `data/my_account.session` faylini hech kimga bermang — bu akkauntingizga to'liq kirish kaliti.
+Userbotlardan me'yorida foydalaning (spam qo'ng'iroqlar akkaunt bloklanishiga olib kelishi mumkin).

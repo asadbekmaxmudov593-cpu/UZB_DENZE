@@ -1,0 +1,4 @@
+# Akkauntingizdan qo'ng'iroq qiluvchi userbot uchun (bepul vositalar)
+telethon>=1.36
+py-tgcalls>=2.1
+edge-tts>=6.1
