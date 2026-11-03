@@ -1,0 +1,5 @@
+# Robux do'kon + Claude AI maslahatchi (python -m robux)
+aiogram==3.13.1
+aiosqlite==0.20.0
+python-dotenv==1.0.1
+anthropic>=2.0

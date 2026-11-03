@@ -17,7 +17,7 @@ export PATH="$HOME/.local/bin:$PATH"
 
 rm -rf .venv
 uv venv --python 3.13 .venv
-uv pip install --python .venv/bin/python -r requirements.txt -r requirements-caller.txt
+uv pip install --python .venv/bin/python -r requirements.txt -r requirements-caller.txt -r requirements-robux.txt
 
 [ -f .env ] || cp .env.example .env
 echo

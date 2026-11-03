@@ -126,3 +126,28 @@ Userbotlardan me'yorida foydalaning (spam qo'ng'iroqlar akkaunt bloklanishiga ol
 
 Keyingi safar: Termux → `proot-distro login ubuntu` → `cd UZB_DENZE && . .venv/bin/activate && python -m caller`.
 Repo **private** bo'lsa, `git clone` parol so'raydi — GitHub *Personal access token* kiriting yoki repoini public qiling.
+
+---
+
+# 💎 Robux do'kon bot + Claude AI maslahatchi (`python -m robux`)
+
+**Mijoz uchun:** 🛒 paket tanlash → Roblox nik → (ixtiyoriy) gamepass havolasi → kartaga to'lov → chek rasmini yuborish → holatni «📦 Buyurtmalarim»da kuzatish.
+Har qanday boshqa savolni shunchaki yozsa — **Claude AI** o'zbekcha javob beradi (narxlar, buyurtma tartibi, gamepass, firibgarlikdan ogohlantirish). Bot hech qachon parol so'ramaydi.
+
+**Admin uchun:** chek rasmi «✅ To'lov keldi / ❌ Rad etish» tugmalari bilan keladi, keyin «📦 Robux yetkazildi». Buyruqlar: `/orders`, `/stats`, `/setprice 400 55000`, `/delprice 400`, `/myid`.
+
+## Sozlash (`.env`)
+| O'zgaruvchi | Tavsif |
+|---|---|
+| `ROBUX_BOT_TOKEN` | @BotFather dan yangi bot tokeni |
+| `ADMIN_IDS` | Sizning Telegram ID (botga `/myid` yozib bilasiz) |
+| `PAYMENT_CARD`, `PAYMENT_HOLDER` | To'lov kartasi va egasi |
+| `SUPPORT_CONTACT` | Yordam uchun username |
+| `ANTHROPIC_API_KEY` | https://console.anthropic.com → API Keys (pullik; bo'sh bo'lsa AI o'chadi, do'kon ishlayveradi) |
+| `CLAUDE_MODEL` | Standart `claude-opus-5-5`; ancha arzon variant — `claude-haiku-5-5` |
+| `AI_DAILY_LIMIT` | Bir mijozga kunlik AI savollar soni (xarajatni cheklaydi) |
+
+```bash
+uv pip install --python .venv/bin/python -r requirements-robux.txt
+python -m robux
+```
