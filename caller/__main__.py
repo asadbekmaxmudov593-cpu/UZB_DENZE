@@ -111,4 +111,7 @@ async def _hangup(calls: PyTgCalls, chat_id: int) -> None:
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        print("\n👋 Userbot to'xtatildi.")
