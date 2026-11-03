@@ -12,7 +12,7 @@ import os
 import tempfile
 
 from pytgcalls import PyTgCalls
-from pytgcalls.types import MediaStream
+from pytgcalls.types import CallConfig, MediaStream
 from telethon import TelegramClient, events
 
 from .config import load_caller_config
@@ -82,7 +82,10 @@ async def main() -> None:
                 await status.edit(f"📞 {alias} ga qo'ng'iroq qilinmoqda...")
                 try:
                     # shaxsiy chat ID -> P2P qo'ng'iroq; javob berilguncha kutadi
-                    await asyncio.wait_for(calls.play(user.id, media(path)), cfg.ring_timeout)
+                    await asyncio.wait_for(
+                        calls.play(user.id, media(path), CallConfig(timeout=cfg.ring_timeout)),
+                        cfg.ring_timeout + 15,
+                    )
                 except asyncio.TimeoutError:
                     await _hangup(calls, user.id)
                     await status.edit(f"📵 {alias} javob bermadi.")
