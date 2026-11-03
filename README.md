@@ -145,6 +145,7 @@ Har qanday boshqa savolni shunchaki yozsa — **Claude AI** o'zbekcha javob bera
 | `SUPPORT_CONTACT` | Yordam uchun username |
 | `ANTHROPIC_API_KEY` | https://console.anthropic.com → API Keys (pullik; bo'sh bo'lsa AI o'chadi, do'kon ishlayveradi) |
 | `CLAUDE_MODEL` | Standart `claude-opus-5-5`; ancha arzon variant — `claude-haiku-5-5` |
+| `SHOP_OPEN`, `SHOP_CLOSE` | Ish vaqti (standart 15:00 – 23:59, Toshkent). Boshqa vaqtda «Sotib olish» yopiq, AI va narxlar ishlaydi; admin har doim buyurtma bera oladi |
 | `AI_DAILY_LIMIT` | Bir mijozga kunlik AI savollar soni (xarajatni cheklaydi) |
 
 ```bash

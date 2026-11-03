@@ -21,7 +21,7 @@ async def main() -> None:
 
     assistant = None
     if cfg.ai_model:
-        assistant = ShopAssistant(cfg.ai_model, cfg.shop_name, cfg.support, cfg.ai_daily_limit)
+        assistant = ShopAssistant(cfg.ai_model, cfg.shop_name, cfg.support, cfg.ai_daily_limit, cfg.hours)
         logging.info("AI maslahatchi yoqildi: %s", cfg.ai_model)
     else:
         logging.warning("ANTHROPIC_API_KEY yo'q — AI maslahatchi o'chirilgan")

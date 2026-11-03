@@ -15,6 +15,7 @@ Do'kon qanday ishlaydi:
 2. Roblox nikini (username) yozadi. Xohlasa gamepass havolasini ham yuboradi.
 3. Ko'rsatilgan kartaga to'lov qiladi va chek rasmini botga yuboradi.
 4. Admin chekni tekshiradi, Robuxni o'tkazadi va bot mijozga xabar beradi.
+Buyurtmalar faqat har kuni {hours} (Toshkent vaqti) qabul qilinadi; boshqa vaqtda mijozga shu vaqtda kelishni ayt.
 Buyurtma holatini «📦 Buyurtmalarim» bo'limida ko'rish mumkin. Murakkab masalalarda yordam: {support}.
 
 Gamepass orqali o'tkazishda gamepass narxi = Robux miqdori / 0.7 (Roblox 30% komissiya oladi),
@@ -32,12 +33,13 @@ Hozirgi narxlar:
 
 
 class ShopAssistant:
-    def __init__(self, model: str, shop_name: str, support: str, daily_limit: int):
+    def __init__(self, model: str, shop_name: str, support: str, daily_limit: int, hours: str):
         self.client = anthropic.AsyncAnthropic()  # ANTHROPIC_API_KEY .env dan o'qiladi
         self.model = model
         self.shop_name = shop_name
         self.support = support
         self.daily_limit = daily_limit
+        self.hours = hours
         self.history: dict[int, list[dict]] = defaultdict(list)
         self.usage: dict[int, tuple[str, int]] = {}
 
@@ -59,7 +61,7 @@ class ShopAssistant:
             return f"Bugungi savollar limiti tugadi 🙏 Ertaga yana yozing yoki {self.support} ga murojaat qiling."
 
         prices = "\n".join(f"- {r} R$ — {p:,} so'm".replace(",", " ") for r, p in packages) or "- (hozircha paket yo'q)"
-        system = SYSTEM_RULES.format(shop=self.shop_name, support=self.support, prices=prices)
+        system = SYSTEM_RULES.format(shop=self.shop_name, support=self.support, hours=self.hours, prices=prices)
 
         messages = self.history[user_id]
         if len(messages) > 20:  # uzun suhbatni qisqartiramiz (faqat matn saqlanadi)

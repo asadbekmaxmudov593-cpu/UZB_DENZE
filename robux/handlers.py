@@ -99,6 +99,7 @@ async def start(m: Message, state: FSMContext, config: ShopConfig, assistant: Sh
     await m.answer(
         f"Assalomu alaykum, <b>{escape(m.from_user.full_name)}</b>! 👋\n"
         f"<b>{escape(config.shop_name)}</b> ga xush kelibsiz — bu yerda Roblox uchun Robux sotib olasiz.\n\n"
+        f"🕒 Buyurtmalar: har kuni <b>{config.hours}</b>\n"
         "🔒 Biz hech qachon Roblox parolingizni so'ramaymiz!" + ai_line,
         reply_markup=MENU,
     )
@@ -111,10 +112,10 @@ async def cancel(m: Message, state: FSMContext):
 
 
 @router.message(F.text == BTN_PRICES)
-async def prices(m: Message, db: ShopDB):
+async def prices(m: Message, db: ShopDB, config: ShopConfig):
     pk = await db.packages()
     text = "\n".join(f"💎 <b>{r} R$</b> — {som(p)}" for r, p in pk) or "Hozircha paketlar yo'q."
-    await m.answer("💰 <b>Narxlar</b>\n\n" + text)
+    await m.answer("💰 <b>Narxlar</b>\n\n" + text + f"\n\n🕒 Buyurtmalar: har kuni {config.hours}")
 
 
 @router.message(F.text == BTN_HELP)
@@ -138,9 +139,17 @@ async def new_chat(m: Message, assistant: ShopAssistant | None):
 
 
 # ---------------- sotib olish ----------------
+def closed_text(config: ShopConfig) -> str:
+    return (f"🕒 Do'kon hozir yopiq. Buyurtmalar har kuni <b>{config.hours}</b> da qabul qilinadi.\n"
+            "Narxlarni ko'rishingiz va savollaringizni yozishingiz mumkin 🙂")
+
+
 @router.message(F.text == BTN_BUY)
-async def buy(m: Message, db: ShopDB, state: FSMContext):
+async def buy(m: Message, db: ShopDB, state: FSMContext, config: ShopConfig):
     await state.clear()
+    if not config.is_open() and m.from_user.id not in config.admin_ids:
+        await m.answer(closed_text(config))
+        return
     pk = await db.packages()
     if not pk:
         await m.answer("Hozircha paketlar yo'q 😔")
@@ -152,7 +161,11 @@ async def buy(m: Message, db: ShopDB, state: FSMContext):
 
 
 @router.callback_query(F.data.startswith("pkg:"))
-async def pick_package(c: CallbackQuery, db: ShopDB, state: FSMContext):
+async def pick_package(c: CallbackQuery, db: ShopDB, state: FSMContext, config: ShopConfig):
+    if not config.is_open() and c.from_user.id not in config.admin_ids:
+        await c.message.answer(closed_text(config))
+        await c.answer()
+        return
     robux = int(c.data.split(":")[1])
     price = await db.package_price(robux)
     if price is None:
