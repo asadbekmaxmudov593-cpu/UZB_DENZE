@@ -15,6 +15,7 @@ class CallerConfig:
     voice: str
     repeat: int
     ring_timeout: int
+    listen_seconds: int  # 0 = javobni yozib olmaslik
 
 
 def load_caller_config() -> CallerConfig:
@@ -40,4 +41,5 @@ def load_caller_config() -> CallerConfig:
         voice=os.getenv("TTS_VOICE", "uz-UZ-SardorNeural"),
         repeat=max(1, int(os.getenv("CALL_REPEAT", "2"))),
         ring_timeout=int(os.getenv("CALL_RING_TIMEOUT", "45")),
+        listen_seconds=max(0, int(os.getenv("CALL_LISTEN_SECONDS", "20"))),
     )

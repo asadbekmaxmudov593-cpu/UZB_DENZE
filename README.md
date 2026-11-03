@@ -84,6 +84,10 @@ Natija: `CALL_CONTACTS` dagi **ada** ga qo'ng'iroq qilinadi, u javob berganda ov
 > «Assalomu alaykum, ada! Yangi agent bot yaratdim. Yana bir bor takrorlayman. Yangi agent bot yaratdim. Xayr, salomat bo'ling!»
 
 Holat (qo'ng'iroq qilinmoqda / javob bermadi / o'qib berildi) shu yerning o'zida ko'rsatiladi.
+
+**Javobni yetkazish:** xabar o'qilgach, bot `CALL_LISTEN_SECONDS` (standart 20) soniya suhbatdoshni tinglaydi.
+Uning gapi «Saqlangan xabarlar»ga 🎙 **ovozli xabar** bo'lib keladi va bepul Google nutqni aniqlash orqali **matnga** aylantiriladi.
+O'chirish uchun: `CALL_LISTEN_SECONDS=0`.
 Birinchi so'z — kontakt taxallusi, qolgani — o'qiladigan matn. Bir nechta kontakt qo'shsa bo'ladi:
 `CALL_CONTACTS=ada:@ada_username,oyi:+998901234567`
 

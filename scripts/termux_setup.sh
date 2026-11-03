@@ -8,7 +8,7 @@
 set -e
 export DEBIAN_FRONTEND=noninteractive
 apt update
-apt install -y curl ca-certificates ffmpeg git nano
+apt install -y curl ca-certificates ffmpeg flac git nano
 
 if ! command -v uv >/dev/null 2>&1; then
     curl -LsSf https://astral.sh/uv/install.sh | sh

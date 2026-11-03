@@ -2,3 +2,4 @@
 telethon>=1.36
 py-tgcalls>=2.1
 edge-tts>=6.1
+SpeechRecognition>=3.10
