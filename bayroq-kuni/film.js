@@ -3,8 +3,11 @@
 // 100 BPM, 4/4: beat 0.6 s, bar 2.4 s. Every clack, pull, card and stamp sits on the beat grid below.
 import { makeTextures, paperSheet, ink, wipeRegion, wipeFront, squeegee, screenFrame, inkFinish, texFill, clamp, lerp, hash, mulberry, unionPath, rectPath } from './engine/silk.js';
 import { SW, SH, BAND, INK, STARS, flagParts, flagPt, moonStars, land, skyline, POLE, HEADER, BANDTXT } from './engine/poster.js';
+import { BINK, BOY_ORDER, BOY_BAND, boyParts, boyCuff, ARTR } from './engine/boy.js';
 
-export const BPM = 100, B = .6, BAR = 2.4, DUR = 60;
+export const BPM = 100, B = .6, BAR = 2.4;
+// The flag film runs on its own clock ft = t − INTRO; the intro (Asadbek's portrait printed and waking up) comes first.
+export const INTRO = 12.0, FT_END = 64.8, DUR = INTRO + FT_END;
 const W = 1080, H = 1920;
 const seg = (t, a, b) => clamp((t - a) / (b - a));
 const ss = t => { t = clamp(t); return t * t * (3 - 2 * t); };
@@ -23,6 +26,7 @@ const PULL = {
 const ORDER = ['sky', 'blue', 'green', 'red', 'navy'];
 const COUNT0 = 36.6, TICK = .15;                       // twelve stars stamped on sixteenths
 const CARDS = [
+  { id: 'c0', slide: -7.2, word: 'ASSALOMU ALAYKUM!', mean: 'Mavzu: Davlat bayrog‘i kuni', sw: 'flag', tw: -6.6, tm: -6.3, fin: true },
   { id: 'c1', slide: 7.2,  word: 'MOVIY',    mean: 'mangu osmon va obihayot ramzi',             sw: 'blue',  tw: 7.8,  tm: 8.1 },
   { id: 'c2', slide: 14.4, word: 'YASHIL',   mean: 'yangilanayotgan tabiat ramzi',              sw: 'green', tw: 15.0, tm: 15.3 },
   { id: 'c3', slide: 19.8, word: 'OQ',       mean: 'tinchlik va poklik ramzi',                  sw: 'paper', tw: 20.4, tm: 20.7 },
@@ -30,7 +34,7 @@ const CARDS = [
   { id: 'c5', slide: 29.4, word: 'YARIM OY', mean: 'yangi tug‘ilgan mustaqil respublika ramzi', sw: 'moon',  tw: 30.0, tm: 30.3 },
   { id: 'c6', slide: 36.0, word: '12 YULDUZ', mean: 'yilning o‘n ikki oyi',                     sw: 'stars', tw: 38.4, tm: 38.7, count: 1 },
 ];
-const FINAL = { id: 'c7', slide: 55.2, word: 'BAYRAMINGIZ MUBORAK!', mean: '18-noyabr — Davlat bayrog‘i kuni', sw: 'flag', tw: 55.8, tm: 56.1 };
+const FINAL = { id: 'c7', slide: 58.8, word: 'BAYRAMINGIZ MUBORAK!', mean: '18-noyabr — Davlat bayrog‘i kuni', sw: 'flag', tw: 59.4, tm: 59.7, fin: true };
 const LOOSE = { t0: 43.2, full: 44.4, snap: 45.6 };
 const STACK_OUT = 46.8;
 const BAND_T = [48.9, 49.2, 49.5];
@@ -88,7 +92,12 @@ function makeTable() {
 // ---------------- events (sound + checks) ----------------
 function events() {
   const ev = [], E = (t, type, o = {}) => ev.push({ t: +t.toFixed(3), type, ...o });
-  E(0, 'clack', { k: 'sky', first: 1 });
+  // intro (flag clock is negative here): Asadbek's portrait is printed, wakes up and says hello
+  E(-INTRO, 'clack', { k: 'boy', first: 1 });
+  for (const [k, P] of Object.entries(BPULL)) E(P[0] - INTRO, 'pull', { k: 'boy_' + k, dur: +(P[1] - P[0]).toFixed(3) });
+  E(BLIFT - INTRO, 'lift', { k: 'boy' });
+  BOY_T.forEach((t, i) => E(t - INTRO, 'stamp', { i }));
+  E(TABLE_MOVE[0] - INTRO, 'pullback', { dur: TABLE_MOVE[1] - TABLE_MOVE[0] });
   for (const k of ORDER) {
     const P = PULL[k];
     if (P.down >= 0) E(P.down, 'clack', { k });
@@ -110,7 +119,7 @@ function events() {
   BAND_T.forEach((t, i) => E(t, 'stamp', { i }));
   E(WIND, 'wind'); E(PULLBACK[0], 'pullback', { dur: PULLBACK[1] - PULLBACK[0] }); E(WAVE0, 'wave');
   ev.sort((a, b) => a.t - b.t);
-  return ev;
+  return ev.map(e => ({ ...e, t: +(e.t + INTRO).toFixed(3), ...(e.t1 != null ? { t1: +(e.t1 + INTRO).toFixed(3) } : {}) }));
 }
 
 // ---------------- camera ----------------
@@ -126,7 +135,8 @@ const KEYS = [
   [41.0, { cx: 470, cy: 330, z: 1.9, roll: 0 }], [43.2, { cx: 488, cy: 360, z: 1.7, roll: 0 }],
   [45.6, { cx: 500, cy: 640, z: 1.18, roll: 0 }],
   [46.6, W2], [48.4, W2], [49.6, { cx: 500, cy: 840, z: 1.08, roll: -1 }], [54.0, { cx: 500, cy: 862, z: 1.12, roll: -1.2 }],
-  [PULLBACK[1], { cx: 500, cy: 820, z: .29, roll: 0 }], [60.01, { cx: 500, cy: 820, z: .3, roll: 0 }],
+  [PULLBACK[1], { cx: 500, cy: 820, z: .29, roll: 0 }], [58.1, { cx: 500, cy: 800, z: .295, roll: 0 }],
+  [59.5, { cx: 500, cy: -1240, z: .95, roll: 0 }], [FT_END + .01, { cx: 500, cy: -1236, z: .985, roll: 0 }],
 ];
 function shot1(t) {                                     // close, rolled, frame edge in view: truck with the squeegee
   const p = seg(t, PULL.sky.t0, PULL.sky.t1), yf = wipeFront(BOX, 'down', p, 40);
@@ -220,7 +230,7 @@ function heroState(t) {
 function drawScreen(t, F) {
   let k = null, ang = 0;
   for (const kk of ORDER) {
-    const P = PULL[kk], tin = P.down < 0 ? -1 : P.down - .32;
+    const P = PULL[kk], tin = P.down < 0 ? -1e9 : P.down - .32;
     if (t >= tin && t < P.lift + .42) {
       k = kk;
       if (P.down >= 0 && t < P.down) { const u = seg(t, P.down - .32, P.down); ang = (1 - u * u) * 88; }
@@ -235,7 +245,7 @@ function drawScreen(t, F) {
     k: Math.max(.02, ca), sh: 6 + 34 * Math.sin(ang * DEG), lift: ang / 88, frame: 50, meshStep: 7,
     flood: c => { c.fillStyle = INK[k]; c.fill(stencil); },
   });
-  if (ang < 1 && t >= (P.down < 0 ? -1 : P.down) && t < P.lift) {
+  if (ang < 1 && t >= (P.down < 0 ? -1e9 : P.down) && t < P.lift) {
     const p = seg(t, P.t0, P.t1), yf = wipeFront(BOX, 'down', p, 40);
     squeegee(ctx, [BOX[0] - 6, yf + 2], [BOX[0] + BOX[2] + 6, yf + 2], [0, 1], { color: INK[k], roll: yf / 24, handle: 1, scale: 1.5, bead: 30, seed: SEEDS[k] });
   }
@@ -243,7 +253,7 @@ function drawScreen(t, F) {
 const COPIES = (() => {
   const r = mulberry(77), out = [];
   for (const j of [-1, 0, 1]) for (const i of [-1, 0, 1]) {
-    if (!i && !j) continue;
+    if (!i && (!j || j === -1)) continue;
     out.push({ x: i * 1150 + (r() - .5) * 60, y: j * 2000 + (r() - .5) * 60, rot: (r() - .5) * 3 * DEG, ph: r() * 6 });
   }
   return out;
@@ -259,7 +269,7 @@ function drawCopies(t) {
 
 // ---------------- proof cards (screen space) ----------------
 const CW = 1000, CH = 300, CX = 40, CY = 1592;
-const JIT = [[0, 0, -.8], [6, -5, .9], [-4, -3, -.5], [8, -7, 1.1], [-6, -2, -1.0], [3, -8, .6], [0, 0, 0]];
+const JIT = [[0, 0, .6], [0, 0, -.8], [6, -5, .9], [-4, -3, -.5], [8, -7, 1.1], [-6, -2, -1.0], [3, -8, .6], [0, 0, 0]];
 function wrap(c, text, maxW) {
   const words = text.split(' '), lines = []; let cur = '';
   for (const w of words) { const s = cur ? cur + ' ' + w : w; if (c.measureText(s).width > maxW && cur) { lines.push(cur); cur = w; } else cur = s; }
@@ -314,7 +324,7 @@ function printText(draw, box, p, seed) {        // a small pull across a line of
   }
 }
 function cardLayout(c) {
-  const fin = c === FINAL, sx = 28, sy = fin ? 110 : 30, ss_ = fin ? 230 : 240;
+  const fin = !!c.fin, sx = 28, sy = fin ? 110 : 30, ss_ = fin ? 230 : 240;
   const tx = fin ? 292 : 300, wordFont = fin ? '900 96px BigShoulders' : '900 124px BigShoulders';
   return { fin, sx, sy, ss: ss_, tx, wordFont, meanFont: '600 44px Outfit' };
 }
@@ -350,7 +360,7 @@ function drawCard(c, t, X, Y, rot) {
     ctx.letterSpacing = '0px';
   } else if (L.fin) {
     ctx.font = L.wordFont; ctx.letterSpacing = '4px';
-    const [w1, w2] = ['BAYRAMINGIZ', 'MUBORAK!'];
+    const sp = c.word.indexOf(' '), w1 = c.word.slice(0, sp), w2 = c.word.slice(sp + 1);
     printText(() => { ctx.fillStyle = INK.navy; ctx.fillText(w1, L.tx, 130); ctx.fillText(w2, L.tx, 214); }, [L.tx - 6, 48, 700, 182], seg(t, c.tw, c.tw + .3), 61);
     ctx.letterSpacing = '0px';
   } else {
@@ -377,36 +387,108 @@ function cardPose(c, idx, t) {
 function drawCards(t, out) {
   const list = t < STACK_OUT + .5 ? CARDS.filter(c => t >= c.slide) : [];
   list.forEach((c) => { const idx = CARDS.indexOf(c), [X, Y, r] = cardPose(c, idx, t); drawCard(c, t, X, Y, r); });
-  if (t >= FINAL.slide) { const [X, Y, r] = cardPose(FINAL, 6, t); drawCard(FINAL, t, X, Y, r); }
+  if (t >= FINAL.slide) { const [X, Y, r] = cardPose(FINAL, 7, t); drawCard(FINAL, t, X, Y, r); }
 }
 
-// ---------------- render ----------------
+// ---------------- Asadbek (absolute clock) ----------------
+const BOY_Y = -2000;                                                   // his portrait lies on the bench above the flag poster
+const BPULL = { sky: [.05, .8], skin: [1.0, 1.55], shade: [1.7, 2.15], black: [2.35, 3.0] };
+const BLIFT = 3.2, BOY_T = [3.45, 3.75], WAKE = 3.6, TABLE_MOVE = [10.7, 12.0];
+const TALK = [[4.3, 5.5], [5.9, 8.0], [8.3, 10.2], [INTRO + 59.0, INTRO + 60.9]];
+const WAVES = [[4.1, 6.9], [INTRO + 58.5, INTRO + 64.2]];
+function talk(t) {
+  const on = TALK.some(([a, b]) => t >= a && t < b);
+  if (!on) return 0;
+  const v = clamp(.55 * Math.sin(t * 13) + .45 * Math.sin(t * 21.7 + 1.3));
+  return v * (.4 + .6 * (.5 + .5 * Math.sin(t * 2.1)));
+}
+function boyState(t) {
+  const prog = {}; for (const k of BOY_ORDER) prog[k] = seg(t, BPULL[k][0], BPULL[k][1]);
+  let raise = 0; for (const [a, b] of WAVES) raise = Math.max(raise, ss(seg(t, a, a + .45)) * (1 - ss(seg(t, b - .5, b))));
+  const awake = t >= WAKE, speaking = TALK.some(([a, b]) => t >= a - .2 && t < b + .2);
+  return {
+    prog, band: BOY_T.map(a => seg(t, a, a + .22)),
+    st: { bob: speaking ? 2.5 * Math.sin(t * 2 * Math.PI / 1.15) : 0, blink: awake && ((t + .4) % 3.7) < .12, m: talk(t), raise, swing: t * 2 * Math.PI * 1.7 },
+  };
+}
+function drawBoySheet(t) {
+  const S = boyState(t);
+  ctx.save(); ctx.translate(0, BOY_Y);
+  ctx.fillStyle = 'rgba(25,18,10,.30)'; ctx.fillRect(9, 13, SW, SH);
+  paperSheet(ctx, T, 0, 0, SW, SH);
+  const REGB = { sky: [0, 0], skin: [1.4, -.8], shade: [-1.1, 1.2], black: [-.8, -1.2] };
+  for (const k of BOY_ORDER) {
+    const pr = S.prog[k]; if (!(pr > 0)) continue;
+    const clip = pr < 1 ? wipeRegion(BOX, 'down', pr, 60 + BOY_ORDER.indexOf(k), 40) : null;
+    for (const pt of boyParts(k, S.st)) {
+      ctx.save(); ctx.translate(REGB[k][0], REGB[k][1]);
+      if (pt.clip) ctx.clip(pt.clip);
+      if (pt.cut) for (const cu of [].concat(pt.cut)) ctx.clip(INV(cu), 'evenodd');
+      ink(ctx, { path: pt.path }, { color: BINK[k], clip, sheen: k === 'black' ? .45 : .8, trap: k === 'sky' ? 0 : .8 });
+      ctx.restore();
+    }
+    if (k === 'black' && pr >= 1) { const cuff = boyCuff(S.st); if (cuff) { ctx.save(); ctx.clip(ARTR); ctx.clip(cuff); paperSheet(ctx, T, 0, 0, SW, SH); ctx.restore(); } }
+  }
+  BOY_BAND.forEach((b, i) => {
+    const p = S.band[i]; if (p <= 0) return;
+    const clip = p < 1 ? wipeRegion([b.x - 10, b.y - b.h - 16, 900, b.h + 34], 'right', p, 81 + i, 16) : null;
+    ink(ctx, { paint: (c, col) => { c.font = b.font; c.letterSpacing = b.ls + 'px'; c.fillStyle = col; c.fillText(b.text, b.x, b.y); c.letterSpacing = '0px'; } }, { color: BINK.cream, clip, reg: [.8, .6] });
+  });
+  inkFinish(ctx, T, 0, 0, SW, SH);
+  tape(4, 6, -.72, 1); tape(996, 8, .7, 1); tape(4, 1494, .7, 1); tape(996, 1492, -.72, 1);
+  // the screen and squeegee while the portrait is printed
+  if (t < BLIFT + .42) {
+    const ang = t >= BLIFT ? eo(seg(t, BLIFT, BLIFT + .4)) * 88 : 0;
+    let k = 'sky'; for (const kk of BOY_ORDER) if (t >= BPULL[kk][0] - .12) k = kk;
+    const stencil = unionPath(boyParts(k, { raise: 0 }).map(q => q.path));
+    screenFrame(ctx, SCREEN, { k: Math.max(.02, Math.cos(ang * DEG)), sh: 6 + 34 * Math.sin(ang * DEG), lift: ang / 88, frame: 50, meshStep: 7,
+      flood: c => { c.fillStyle = BINK[k]; c.fill(stencil); } });
+    if (ang < 1) {
+      const p = seg(t, BPULL[k][0], BPULL[k][1]), yf = wipeFront(BOX, 'down', p, 40);
+      squeegee(ctx, [BOX[0] - 6, yf + 2], [BOX[0] + BOX[2] + 6, yf + 2], [0, 1], { color: BINK[k], roll: yf / 24, handle: 1, scale: 1.5, bead: 30, seed: 3 + BOY_ORDER.indexOf(k) });
+    }
+  }
+  ctx.restore();
+}
+const IKEYS = [[0, { cx: 512, cy: BOY_Y + 540, z: 1.9, roll: 2 }], [3.25, { cx: 506, cy: BOY_Y + 548, z: 2.05, roll: 1.5 }],
+  [4.4, { cx: 500, cy: BOY_Y + 760, z: .95, roll: 0 }], [TABLE_MOVE[0], { cx: 500, cy: BOY_Y + 768, z: .985, roll: 0 }], [TABLE_MOVE[1], null]];
+function introCam(t) {
+  let i = 0; while (i < IKEYS.length - 2 && t >= IKEYS[i + 1][0]) i++;
+  const [ta, A] = IKEYS[i], [tb, B0] = IKEYS[i + 1], Bc = B0 || shot1(0);
+  const c = lerpCam(A, Bc, eio(seg(t, ta, tb))); c.vy = 780; return c;
+}
+
+// ---------------- render (absolute clock t; the flag film runs on ft = t − INTRO) ----------------
 export function render(t) {
+  const ft = t - INTRO;
   ctx.setTransform(1, 0, 0, 1, 0, 0);
-  const cam = camera(t);
+  const cam = t < INTRO ? introCam(t) : camera(ft);
   ctx.save();
   ctx.translate(W / 2, cam.vy); ctx.rotate(cam.roll * DEG); ctx.scale(cam.z, cam.z); ctx.translate(-cam.cx, -cam.cy);
   const R = Math.hypot(W, H) / cam.z + 50;
   texFill(ctx, TABLE, cam.cx - R, cam.cy - R, 2 * R, 2 * R, 1.6);
-  if (t >= PULLBACK[0]) drawCopies(t);
-  const st = heroState(t);
-  drawSheet(st);
-  drawScreen(t, st.F);
+  if (ft >= PULLBACK[0]) drawCopies(ft);
+  if (cam.cy - (cam.vy + 400) / cam.z < BOY_Y + SH + 20) drawBoySheet(t);
+  if (cam.cy + (H - cam.vy + 400) / cam.z > -20) {
+    const st = heroState(ft);
+    drawSheet(st);
+    drawScreen(ft, st.F);
+  }
   ctx.restore();
-  drawCards(t);
+  drawCards(ft);
 }
 
 // ---------------- texts (for readcheck) ----------------
-export function texts(t) {
-  const out = [];
+export function texts(tAbs) {
+  const t = tAbs - INTRO, out = [];
   if (t < STACK_OUT) for (const c of CARDS) {
     if (t < c.slide + .38) continue;
     const later = CARDS.find(d => d.slide > c.slide && t >= d.slide + .3); if (later) continue;   // covered by the next card
     const [X, Y] = cardPose(c, CARDS.indexOf(c), t); cardTexts(c, t, X, Y, 0, out);
   }
-  if (t >= FINAL.slide + .38) { const [X, Y] = cardPose(FINAL, 6, t); cardTexts(FINAL, t, X, Y, 0, out); }
+  if (t >= FINAL.slide + .38) { const [X, Y] = cardPose(FINAL, 7, t); cardTexts(FINAL, t, X, Y, 0, out); }
   // the info band (world space)
-  const cam = camera(t), toS = (x, y) => {
+  const cam = tAbs < INTRO ? introCam(tAbs) : camera(t), toS = (x, y) => {
     const dx = (x - cam.cx) * cam.z, dy = (y - cam.cy) * cam.z, r = cam.roll * DEG;
     return [W / 2 + dx * Math.cos(r) - dy * Math.sin(r), cam.vy + dx * Math.sin(r) + dy * Math.cos(r)];
   };
@@ -417,5 +499,11 @@ export function texts(t) {
     out.push({ id: b.id, text: b.text, x0: Math.min(a[0], c[0]), y0: Math.min(a[1], c[1]), x1: Math.max(a[0], c[0]), y1: Math.max(a[1], c[1]) });
   });
   if (t >= PULL.navy.t1 && t < PULLBACK[0]) out.push({ id: 'hdr', text: HEADER.text, x0: 0, y0: 0, x1: 1, y1: 1, pass: true });
+  BOY_BAND.forEach((b, i) => {                                            // Asadbek's name band
+    if (tAbs < BOY_T[i] + .22 || tAbs >= TABLE_MOVE[0]) return;
+    ctx.save(); ctx.font = b.font; ctx.letterSpacing = b.ls + 'px'; const w = ctx.measureText(b.text).width; ctx.restore();
+    const a = toS(b.x, BOY_Y + b.y - b.h), c = toS(b.x + w, BOY_Y + b.y + 4);
+    out.push({ id: b.id, text: b.text, x0: Math.min(a[0], c[0]), y0: Math.min(a[1], c[1]), x1: Math.max(a[0], c[0]), y1: Math.max(a[1], c[1]) });
+  });
   return out;
 }

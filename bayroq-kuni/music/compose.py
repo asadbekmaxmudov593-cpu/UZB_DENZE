@@ -1,4 +1,4 @@
-"""compose.py · original score for "Bayroq kuni": 100 BPM, 4/4 (beat 0.6 s, bar 2.4 s), 25 bars = 60 s, D Dorian.
+"""compose.py · original score for "Bayroq kuni": 100 BPM, 4/4 (beat 0.6 s, bar 2.4 s), 32 bars = 76.8 s, D Dorian (a 12 s intro, then the flag film).
 Uzbek folk colours, played by hand: doira (frame drum: dum / tak / jingles), a plucked dutor-like ostinato, a nay-like flute,
 a bowed drone for the white. No anthem melody: every line here is new.
 
@@ -17,11 +17,12 @@ from core.audio import pluck as P
 from core.audio.sfx import SR, add, lp, hp
 
 B = 0.6; BAR = 2.4
-def bt(bar, beat=0.): return bar * BAR + beat * B
+OFF = 12.0                                   # the intro (Asadbek's portrait) comes first; the flag film's bars start here
+def bt(bar, beat=0.): return OFF + bar * BAR + beat * B
 EV = json.load(open(os.path.join(D, 'events.json')))['ev']
 def ev1(tp): return next(e for e in EV if e['type'] == tp)
 SNAP = ev1('snap')['t']; SIL0 = ev1('silence')['t']; HUSH0 = ev1('hush')['t']; HUSH1 = ev1('hush')['t1']
-TOT = 60 + 3.0
+TOT = 76.8 + 3.0
 N = int(TOT * SR)
 S.seed(7); rng = np.random.default_rng(7)
 stem = {k: np.zeros((N, 2), np.float32) for k in ['doira', 'dutor', 'low', 'nay', 'drone']}
@@ -48,14 +49,14 @@ def drone(p, at, dur, vel=.32, gain=1.):
 OST = {'D': ['D4', 'A3', 'D4', 'E4', 'F4', 'E4', 'D4', 'A3'], 'C': ['C4', 'G3', 'C4', 'D4', 'E4', 'D4', 'C4', 'G3'],
        'G': ['G3', 'D4', 'G4', 'A4', 'B4', 'A4', 'G4', 'D4'], 'A': ['A3', 'E4', 'A4', 'B4', 'C#5', 'B4', 'A4', 'E4']}
 LOWC = {'D': ['D2', 'A2'], 'C': ['C2', 'G2'], 'G': ['G1', 'D2'], 'A': ['A1', 'E2']}
-HARM = ['D', 'D', 'D', 'C', 'D',  'D', 'G', 'D',  'D', 'D',  'D', 'C',  'D', 'G', 'D', 'D', 'C', 'D',  'D',  'D', 'D', 'C', 'G', 'A', 'D']
+HARM = ['D', 'D', 'D', 'C', 'D',  'D', 'G', 'D',  'D', 'D',  'D', 'C',  'D', 'G', 'D', 'D', 'C', 'D',  'D',  'D', 'D', 'C', 'G', 'D', 'G', 'A', 'D']
 
 for bar, h in enumerate(HARM):
     t0 = bt(bar)
     white = 8 <= bar <= 9
     canton = 12 <= bar <= 17
     drift = bar == 18
-    end = bar == 24
+    end = bar == 26
     if white or drift or end: continue
     fast = 19 <= bar <= 22                                   # after the snap: sixteenths
     # low strings (dutor's open strings) on 1 (and 3 in full sections)
@@ -102,6 +103,8 @@ phrase(5, A1); phrase(7, A2)
 phrase(10, Bp, .6)
 phrase(12, Cp, .54); phrase(16, Cq, .54)
 phrase(20, Dp, .62)
+Ep = [(0, 'F5', 1), (1, 'E5', .5), (1.5, 'D5', .5), (2, 'E5', 2), (4, 'C#5', 2), (6, 'E5', 2)]
+phrase(24, Ep, .6)
 
 # ---------- the drift, the silence, the snap ----------
 d0 = bt(18)
@@ -114,13 +117,27 @@ add(stem['doira'], S.hit('sus_cymbal', 'hit', .6), SNAP, .5, 0)
 roll(bt(20, 1), bt(20, 2.6), .45, .9)
 
 # ---------- the cadence and the last chord (D major) ----------
-e0 = bt(24)
+e0 = bt(26)
 dum(e0, .9, 1.3); jingle(e0, .6, 1.2)
 low(['D2', 'A2', 'D3', 'F#3'], e0, 3.6, .75, 1.2)
 for i, p in enumerate(['D4', 'F#4', 'A4', 'D5']): dut(p, e0 + .06 * i, 2.4, .45, .9, -.2 + .12 * i)
 drone('D2', e0, 3.4, .42, 1.1); drone('A2', e0, 3.4, .36, 1.0)
 nay('F#5', e0, 2.4, .6)
 roll(e0 + 1.2, e0 + 2.0, .25, .5)
+
+# ---------- the intro: Asadbek's portrait printed (a rising pluck per ink), then a light groove under his greeting ----------
+dum(0.0, .8, 1.2); low(['D2', 'A2'], 0.0, 2.6, .6)
+for at, p in [(.05, 'D4'), (1.0, 'F4'), (1.7, 'A4'), (2.35, 'D5')]: dut(p, at, .9, .55, 1.1, .1); tak(at, .4)
+dut('A5', 3.6, 1.6, .4, .9, .2); jingle(3.6, .35)                       # he wakes up
+for k, h in enumerate(['D', 'D', 'C']):                                     # 4.8, 7.2, 9.6: soft bars under the greeting
+    t0 = 4.8 + k * BAR
+    low(LOWC[h], t0, 2.2, .52)
+    for j in range(0, 8, 2): dut(OST[h][j], t0 + j * B / 2, .5, .44, 1.1)
+    dum(t0, .45, .8); tak(t0 + B, .38); tak(t0 + 3 * B, .38); jingle(t0 + 1.5 * B, .26); jingle(t0 + 3.5 * B, .22)
+for at, p, d in [(4.8, 'A4', .85), (5.7, 'G4', .3), (6.0, 'A4', .6), (7.2, 'D5', 1.1), (8.4, 'C5', .55), (9.0, 'A4', 1.2)]:   # a short nay greeting
+    nay(p, at, d, .5)
+roll(10.8, 11.95, .38, .9)                                                  # the table move: a doira roll into the flag
+dum(11.95, .6, .9)
 
 # ---------- level, mute the silence, reverb, write ----------
 tt = np.arange(N) / SR

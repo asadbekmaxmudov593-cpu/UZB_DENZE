@@ -97,3 +97,16 @@ The proof cards live in screen space at the foot of the vertical frame (like a t
 - Labels: **Outfit 600** (geometric sans, OFL) for the meanings.
 - Uzbek apostrophes: ʻ (U+02BB) in oʻ / gʻ if the fonts carry it, otherwise ‘.
 - Text exists only as ink: on the proof cards (navy ink, swatch in the colour), in the info band (paper knocked out of the navy), on the end tag. Every text is printed by a small pull or a stamp, never faded.
+
+## 10. Version 2: Asadbek opens and closes the film
+
+At the user's request, a presenter: Asadbek, 13, pupil of school 54, class 8-E, in a white shirt and a black suit.
+He is drawn in the same medium, as a screen-printed portrait poster lying on the bench above the flag poster
+(four inks: sky, skin, skin shade, black; the white shirt is bare paper, the same idea as the flag's white).
+
+- 0.0–3.6 the portrait prints on camera, close on the face (sky, skin, shade, black), his name stamps into the band.
+- 3.6 the print wakes up: he blinks, waves and greets; a proof card prints "ASSALOMU ALAYKUM! / Mavzu: Davlat bayrogʻi kuni".
+- 10.7–12.0 a table move carries the camera down to the flag poster; the flag film follows unchanged (its clock starts at 12.0).
+- At the end the pull-back shows his portrait among the copies; the camera pushes back to him, he waves and the last card prints.
+- Total 76.8 s. The score gains a 5-bar intro (a rising pluck per ink, a soft groove and a nay greeting) and a 2-bar tag before the final chord.
+- The mouth moves on a generic talking pattern; a voice track can replace it (the talk windows are `TALK` in film.js).

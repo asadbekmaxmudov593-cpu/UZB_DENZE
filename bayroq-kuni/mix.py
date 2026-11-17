@@ -12,7 +12,7 @@ from sfx import SR, t_, env_exp, bp, lp, hp, noise, norm, brown, clack, creak, t
 from scipy.ndimage import maximum_filter1d, uniform_filter1d
 
 EV = json.load(open(os.path.join(D, 'events.json')))['ev']
-DUR = 60.0
+DUR = 76.8
 N = int(DUR * SR)
 rng = np.random.default_rng(19)
 amb = np.zeros((N, 2)); fol = np.zeros((N, 2))
