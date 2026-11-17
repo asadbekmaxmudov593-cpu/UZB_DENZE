@@ -1,0 +1,24 @@
+Bayroq kuni — credits for third-party material
+
+Fonts (SIL Open Font License 1.1, texts in fonts/):
+  Big Shoulders Display — The Big Shoulders Project Authors (Google Fonts)
+  Outfit — The Outfit Project Authors (Google Fonts)
+
+Music samples (all CC0 1.0):
+  Samples (CC0): FreePats project (freepats.zenvoid.org), VS Chamber Orchestra: Community Edition (Versilian Studios),
+  Versilian Community Sample Library (Versilian Studios)
+  Instruments used: frame_drum, tambourine, flute, cellos, world_perc (darbuka), sus_cymbal.
+  Plucked strings: physically modelled (core/audio/pluck.py), no samples.
+
+Foley and ambience: synthesised in code (core/audio/sfx.py and mix.py), no recordings.
+
+Code:
+  engine/silk.js is adapted from the Lemo-Opuscar library's silkscreen-poster demo
+  (https://github.com/lemomo-ai/lemo-opuscar), MIT License, Copyright (c) 2026 Lemomo (LemoLab).
+  The render, audio and check tools under $LIB/core are from the same library (MIT).
+
+Flag geometry: the standard 1:2 construction of the State Flag of the Republic of Uzbekistan
+(stripes 80/5/80/5/80, crescent and 12 stars), redrawn as paths in engine/poster.js.
+
+No voice, no stock footage, no generated images: every frame is drawn in code.
+The score is original; it does not quote the state anthem.

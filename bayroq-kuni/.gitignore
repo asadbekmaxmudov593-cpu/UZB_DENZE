@@ -1,0 +1,4 @@
+# intermediate render files (rebuilt by build.sh)
+out/
+*.part.mp4
+*.master.wav
