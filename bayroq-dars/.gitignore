@@ -1,0 +1,4 @@
+stills/
+*_parts/
+__pycache__/
+*.part.mp4
