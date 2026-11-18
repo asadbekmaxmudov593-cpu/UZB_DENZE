@@ -20,8 +20,7 @@ export const SHOTS = [], LINES = [];
 let t = 0;
 for (const S of DEF) {
   const t0 = t;
-  if (S.endAt) t = S.endAt;
-  else if (S.fixed) t += S.fixed;
+  if (S.fixed) t = S.endAt || t + S.fixed;
   else {
     let x = t0 + S.pad;
     S.lines.forEach(([who, text, voice, vd], i) => {
