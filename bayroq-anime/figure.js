@@ -1,4 +1,4 @@
-// Asadbek, full figure (13, slim): black suit trousers and jacket, white shirt, black shoes. Head-local units (cranium radius 80),
+// Diyorbek, full figure (13, slim): black suit trousers and jacket, white shirt, black shoes. Head-local units (cranium radius 80),
 // feet at y ≈ 1060. Poses: 'stand', 'walk' (cycle phase ph 0..1, 4 drawings), 'pull' (hand over hand on a rope, ph), 'wave' (ph), 'carry' (folded flag at the chest).
 import { cel, poly, path, line, TAU } from './cel.js';
 import { head80 } from './head80.js';

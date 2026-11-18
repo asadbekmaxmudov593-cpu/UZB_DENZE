@@ -26,7 +26,7 @@ function lightBand(c, x, col, a = .22, w = 520) {
 }
 const blinkAt = t => ((t + .9) % 3.3) < .125;
 
-// 1 — wide: blue dawn, the school, the pole; a small Asadbek walks in carrying the folded flag (small hero, huge painted world)
+// 1 — wide: blue dawn, the school, the pole; a small Diyorbek walks in carrying the folded flag (small hero, huge painted world)
 export function wide(S) {
   const { g, e, A, t } = S, P = PAL.blue;
   g.drawImage(A.court.dawn.c, 0, 0); e.drawImage(A.court.dawn.e, 0, 0);
@@ -54,6 +54,7 @@ export function eyes(S) {
 }
 // 3 — medium bust, 3/4, held, silent; a warm light band sweeps across; his name card slides in (anime character card)
 export const CARD = { t0: 6.7, t1: 11.9 };
+export const NAME = 'DIYORBEK';
 export function nameCard(g, e, t) {
   const k = eio(seg(t, CARD.t0, CARD.t0 + .45)) * (1 - eio(seg(t, CARD.t1 - .3, CARD.t1))); if (k <= 0) return;
   const x0 = -700 + k * 820, y0 = 610;
@@ -61,17 +62,18 @@ export function nameCard(g, e, t) {
   g.fillStyle = rgba('#0b1030', .78); g.beginPath(); g.moveTo(0, y0); g.lineTo(760, y0); g.lineTo(700, y0 + 250); g.lineTo(0, y0 + 250); g.closePath(); g.fill();
   g.fillStyle = '#14b8d8'; g.beginPath(); g.moveTo(0, y0 + 168); g.lineTo(726, y0 + 168); g.lineTo(716, y0 + 196); g.lineTo(0, y0 + 196); g.closePath(); g.fill();
   g.fillStyle = '#22c04a'; g.fillRect(0, y0 + 200, 700, 10); g.fillStyle = '#e83a4a'; g.fillRect(0, y0 + 160, 730, 5);
-  g.font = 'italic 900 132px Kanit'; g.textBaseline = 'alphabetic'; g.lineJoin = 'round';
+  let fs = 132; g.font = `italic 900 ${fs}px Kanit`; while (g.measureText(NAME).width > 620 && fs > 80) { fs -= 4; g.font = `italic 900 ${fs}px Kanit`; }
+  g.textBaseline = 'alphabetic'; g.lineJoin = 'round';
   const gr = g.createLinearGradient(0, y0 + 20, 0, y0 + 150); gr.addColorStop(0, '#ffffff'); gr.addColorStop(.5, '#cfefff'); gr.addColorStop(.52, '#5a8ad0'); gr.addColorStop(1, '#e6f8ff');
-  g.strokeStyle = '#08102e'; g.lineWidth = 12; g.strokeText('ASADBEK', 70, y0 + 146);
-  g.fillStyle = gr; g.fillText('ASADBEK', 70, y0 + 146);
+  g.strokeStyle = '#08102e'; g.lineWidth = 12; g.strokeText(NAME, 70, y0 + 146);
+  g.fillStyle = gr; g.fillText(NAME, 70, y0 + 146);
   g.font = '700 40px "Barlow SC"'; g.letterSpacing = '8px'; g.fillStyle = '#0b1030'; g.fillText('54-MAKTAB · 8-E SINF', 78, y0 + 191); g.letterSpacing = '0px';
   g.restore();
   e.save(); e.translate(x0, 0); e.fillStyle = rgba('#14b8d8', .5); e.fillRect(0, y0 + 168, 726, 28); e.restore();
 }
 export function cardTexts(t) {
   if (t < CARD.t0 + .45 || t >= CARD.t1 - .3) return [];
-  return [{ id: 'n1', text: 'ASADBEK', x0: 190, y0: 640, x1: 760, y1: 760 }, { id: 'n2', text: '54-MAKTAB · 8-E SINF', x0: 190, y0: 775, x1: 800, y1: 815 }];
+  return [{ id: 'n1', text: NAME, x0: 190, y0: 640, x1: 760, y1: 760 }, { id: 'n2', text: '54-MAKTAB · 8-E SINF', x0: 190, y0: 775, x1: 800, y1: 815 }];
 }
 export function bust(S) {
   const { g, e, A, t, lt } = S, P = PAL.dawn;
@@ -105,8 +107,8 @@ export function title(S) {
     e.strokeStyle = rgba(stroke2, .9 * flick); e.lineWidth = size * .07; e.strokeText(txt, W / 2, y); e.restore();
   };
   if (flick > 0) {
-    chrome('DAVLAT BAYROGʻI', 470, 190, '#14b8d8');
-    chrome('KUNI', 660, 170, '#2ad06a');
+    chrome('18-NOYABR', 470, 200, '#14b8d8');
+    chrome('BAYROQ KUNI', 665, 170, '#2ad06a');
     g.save(); g.textAlign = 'center'; g.font = '600 40px "Barlow SC"'; g.fillStyle = rgba('#ffe0ff', .9); g.letterSpacing = '16px'; g.fillText('OʻZBEKISTON RESPUBLIKASI', W / 2, 770); g.letterSpacing = '0px'; g.restore();
   }
   const sx = -300 + seg(lt, .2, 1.3) * 2600;

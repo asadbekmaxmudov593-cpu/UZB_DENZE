@@ -1,4 +1,4 @@
-// Colour models (iro shitei) for Asadbek and the flag: one daylight base, derived per time of day.
+// Colour models (iro shitei) for Diyorbek and the flag: one daylight base, derived per time of day.
 // Pre-dawn blue → dawn → sunrise gold; a backlit set for silhouettes against the sun.
 import { hex } from './cel.js';
 

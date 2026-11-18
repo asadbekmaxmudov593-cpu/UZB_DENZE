@@ -1,4 +1,4 @@
-// Timeline (120 BPM, beat 0.5 s, bar 2 s). Cuts land on bars. VO = Asadbek's lines (subtitles on the tape; lip flaps follow them).
+// Timeline (120 BPM, beat 0.5 s, bar 2 s). Cuts land on bars. VO = Diyorbek's lines (subtitles on the tape; lip flaps follow them).
 export const BPM = 120, BEAT = .5, BAR = 2;
 export const bar = (b, beat = 0) => b * BAR + beat * BEAT;
 export const DUR = 62;
@@ -8,7 +8,7 @@ export const SHOTS = [
 ];
 export const shotAt = t => SHOTS.find(s => t >= s[0] && t < s[1]) || SHOTS[SHOTS.length - 1];
 export const T = { walk: [.6, 3.7], open: 4.5, pull: [16.4, 38], limp: 38, silence: [43.5, 44], sun: 44, title: 12.15, endTitle: 57.0, wave: [52.2, 56] };
-// captions (on the tape). Asadbek does not speak: his name is a character card in the bust shot (shots.js).
+// captions (on the tape). Diyorbek does not speak: his name is a character card in the bust shot (shots.js).
 export const VO = [
   { id: 'v3', t: 16.3, d: 3.0, text: '1991-yil 18-noyabrda Davlat bayrogʻi qonuni qabul qilingan.' },
   { id: 'v4', t: 21.35, d: 2.6, text: 'Moviy — mangu osmon va obihayot ramzi.', stripe: [0, 80] },
@@ -26,5 +26,5 @@ export function subSpans() {
   S.forEach((s, i) => { if (S[i + 1]) s.b = Math.min(s.b, S[i + 1].a); });
   return S;
 }
-// is Asadbek speaking at t (for lip flaps)?
+// is Diyorbek speaking at t (for lip flaps)?
 export const speaking = () => null;   // he does not speak

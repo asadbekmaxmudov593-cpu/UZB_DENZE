@@ -1,4 +1,4 @@
-// Adapted for Asadbek (13, short hair, white shirt, black suit): no goggles, ponytail, headset or scarf; thinner lashes.
+// Adapted for Diyorbek (13, short hair, white shirt, black suit): no goggles, ponytail, headset or scarf; thinner lashes.
 // Head for an 80s character design: cranium sphere + egg-shaped jaw, three angles (front / q = 3/4 / side) × several expressions
 // Local coordinates: cranium centre (0,0), radius 80; top of head -80, eye centre +22, nose base +54, mouth +74, chin +114. The face looks to screen right.
 // Lines: skin = thin warm dark brown, hair = deep purple, lashes near-black, props near-black (the coloured lines, iro-sen, of 80s cels)
