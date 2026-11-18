@@ -1,0 +1,6 @@
+out/
+stills/
+music/stems/
+out_video.log
+*.part.mp4
+*.master.wav

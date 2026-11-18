@@ -1,0 +1,14 @@
+Pireney sayohati — credits for third-party material
+
+Code: cel.js, post.js, fx.js and head80.js (adapted: short hair, suits, beards and mustaches, headwear), and the instrument
+synthesis in music/score.py, are from the Lemo-Opuscar library's cel-anime-80s demo (https://github.com/lemomo-ai/lemo-opuscar),
+MIT License, Copyright (c) 2026 Lemomo (LemoLab). The story, scenes, characters, places, map, harmony, melodies and arrangement are new.
+
+Fonts (SIL Open Font License 1.1, texts in fonts/): Kanit (Cadson Demak), Barlow Semi Condensed (Jeremy Tribby).
+Music and sound: synthesised in code (numpy), no samples, no recordings.
+Map: the Iberian coast and the medieval kingdoms are hand-drawn approximations from longitude/latitude points (no map dataset);
+the kingdoms' outlines are simplified for teaching.
+Facts: the 8th-grade history textbook, topic 8 "Pireney yarimoroli mamlakatlari: Ispaniya va Portugaliya" (pages supplied by the user).
+Historical people (Ferdinand II, Isabella I, Alfonso X, Amir Temur, Clavijo) are drawn as generic characters, not portraits.
+No voice: the dialogue is on screen.
+Voices: generated with the ElevenLabs API on the user's account (premade voices "Adam" and "Liam", model eleven_v4); use follows the ElevenLabs terms of that account.
