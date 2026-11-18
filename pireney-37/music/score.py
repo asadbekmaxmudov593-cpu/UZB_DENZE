@@ -265,15 +265,21 @@ PC = dict(C=0, Db=1, **{'C#': 1}, D=2, Eb=3, E=4, F=5, **{'F#': 6}, G=7, Ab=8, *
 Q = {'M7': [0, 4, 7, 11], 'M9': [0, 4, 7, 11, 14], 'm7': [0, 3, 7, 10], 'm9': [0, 3, 7, 10, 14], '7': [0, 4, 7, 10],
      '13': [0, 4, 10, 14, 21], '7sus4': [0, 5, 7, 10], '7b9': [0, 4, 7, 10, 13], 'add9': [0, 4, 7, 14]}
 # bar -> [(start beat, beats, root, quality)]
-SECT = [  # the 37-second cut: (first bar, last bar, progression, name)
-    (0, 3, [('D', 'M9'), ('B', 'm9'), ('G', 'M9'), ('A', '13')], 'car'), (4, 4, [('A', '7sus4')], 'jump'),
-    (5, 7, [('D', 'M9'), ('A', '13'), ('G', 'M9')], 'ferdinand'), (8, 9, [('A', 'm7'), ('E', '7b9')], 'granada'),
-    (10, 11, [('G', 'M9'), ('C', 'M9')], 'lisbon'), (12, 14, [('D', 'm9'), ('C', 'add9'), ('A', '7sus4')], 'samarkand'),
-    (15, 15, [('A', '7b9')], 'jump2'), (16, 16, [('A', '13')], 'home'), (17, 19, [('D', 'M9')], 'end')]
-CH = {}
-for a, b, prog, _ in SECT:
-    for k, bb in enumerate(range(a, b + 1)): r, q = prog[k % len(prog)]; CH[bb] = [(0, 4, r, q)]
-SECTION = {bb: name for a, b, _, name in SECT for bb in range(a, b + 1)}
+PROG = {'car': [('D', 'M9'), ('B', 'm9'), ('G', 'M9'), ('A', '13')], 'jump': [('A', '7sus4')], 'samarkand': [('D', 'm9'), ('C', 'add9'), ('A', '7sus4')],
+        'ferdinand': [('D', 'M9'), ('A', '13')], 'granada': [('A', 'm7'), ('E', '7b9')], 'lisbon': [('G', 'M9'), ('C', 'M9'), ('D', 'add9'), ('A', '13')],
+        'jump2': [('A', '7b9')], 'home': [('A', '13')], 'end': [('D', 'M9')]}
+_scenes = [e for e in json.load(open(os.path.join(os.path.dirname(HERE), 'events.json')))['ev'] if e['type'] == 'scene']
+def _scene_at(t):
+    for e in _scenes:
+        if e['t'] <= t < e['t'] + e['dur']: return e['name']
+    return 'road2'
+_MAP = {'road': 'car', 'cabin': 'car', 'cabin2': 'home', 'road2': 'end'}
+SECTION, CH, _count = {}, {}, {}
+for b in range(0, 20):
+    nm = _MAP.get(_scene_at(b * 2 + 1.0), _scene_at(b * 2 + 1.0)); SECTION[b] = nm
+    k = _count.get(nm, 0); _count[nm] = k + 1; r, q = PROG[nm][k % len(PROG[nm])]; CH[b] = [(0, 4, r, q)]
+FIRST = {}
+for b in range(20): FIRST.setdefault(SECTION[b], b)
 
 
 def chord_at(b, beat):
@@ -514,16 +520,17 @@ def build():
     lead = []
     def mel(b, notes, v=.9):
         for s_, d, m in notes: lead.append((T(b, s_), d * BEAT, m, v))
-    for b in range(0, 17):
+    for b in range(0, 20):
+        if SECTION[b] == 'end': continue
         name = SECTION.get(b, 'end')
         if name in ('car', 'home'):
-            k = b - (0 if name == 'car' else 16)
+            k = b - FIRST[name]
             drums_bar(b, 'groove' if k >= 1 else 'intro', .62); bass_bar(b, B_VERSE, .75); ep_bar(b, [(0, 1.0, .9), (1.5, .4, .6), (2.5, .9, .8), (3.5, .4, .6)], .85); gtr_bar(b, G_VERSE, .55); pad_bar(b, .4)
             if k >= 1: mel(b, ROAD[(k - 1) % 4], .75)
         elif name in ('jump', 'jump2'):
             pad_bar(b, .9); arp(b, 1.1, 72, .25); place('fx', riser(BAR, 1.0, 300, 9000), T(b), .2)
         elif name == 'granada':
-            k = b - 8; pluckArp(b, .9); castanets(b, .9 if k else .5); pad_bar(b, .5); place('bass', bass(bass_root(CH[b][0][2]), BAR * .9, .6, 'F'), T(b), .28)
+            k = b - FIRST[name]; pluckArp(b, .9); castanets(b, .9 if k else .5); pad_bar(b, .5); place('bass', bass(bass_root(CH[b][0][2]), BAR * .9, .6, 'F'), T(b), .28)
             if k >= 1: mel(b, ANDAL[(k - 1) % 4], .8)
         elif name in ('map', 'map2'):
             pad_bar(b, .7); arp(b, .8, 67); place('bass', bass(bass_root(CH[b][0][2]), BAR * .9, .5, 'F'), T(b), .22)
@@ -532,26 +539,27 @@ def build():
             r, q = chord_at(b, 0); stab(b, 0, BAR * .9, max(voicing(r, q, 70)), .55, .4, att=.25, vel=.7)
             ep_bar(b, [(0, 2.0, .7), (2, 1.6, .6)], .7, 64)
         elif name == 'ferdinand':
-            k = b - 5; drums_bar(b, 'title', .9, crash_=(k == 0)); bass_bar(b, B_TITLE, .9); pad_bar(b, .7); gtr_bar(b, G_TITLE, .7)
+            k = b - FIRST[name]; drums_bar(b, 'title', .9, crash_=(k == 0)); bass_bar(b, B_TITLE, .9); pad_bar(b, .7); gtr_bar(b, G_TITLE, .7)
             for s_ in (0, 1.5, 2, 3.5): r, q = chord_at(b, s_); stab(b, s_, BEAT * .8, max(voicing(r, q, 72)), 1.2, 1.0, vel=.85)
             mel(b, FANF[k % 4], .9)
         elif name == 'lisbon':
-            k = b - 10; drums_bar(b, 'groove', .7); bass_bar(b, B_CHORUS, .8); ep_bar(b, [(0, 1.4, 1), (1.5, .45, .7), (2, 1.4, .9), (3.5, .45, .8)], .8, 65); gtr_bar(b, G_CHORUS, .6); pad_bar(b, .55)
+            k = b - FIRST[name]; drums_bar(b, 'groove', .7); bass_bar(b, B_CHORUS, .8); ep_bar(b, [(0, 1.4, 1), (1.5, .45, .7), (2, 1.4, .9), (3.5, .45, .8)], .8, 65); gtr_bar(b, G_CHORUS, .6); pad_bar(b, .55)
             mel(b, SEA[k % 4], .85)
         elif name == 'samarkand':
-            k = b - 12; doira(b, 1.0); pluckArp(b, .7); pad_bar(b, .6); place('bass', bass(bass_root(CH[b][0][2]), BAR * .9, .6, 'T'), T(b), .3)
+            k = b - FIRST[name]; doira(b, 1.0); pluckArp(b, .7); pad_bar(b, .6); place('bass', bass(bass_root(CH[b][0][2]), BAR * .9, .6, 'T'), T(b), .3)
             mel(b, DORIAN[k % 4], .9)
             for s_, d, m in DORIAN[k % 4]: place('brass', brass(m - 12, d * BEAT * .95, .7, .8), T(b, s_), .12, .15)
-    for at in (10.117, 30.383):                                         # the two jumps
+    _ev = json.load(open(os.path.join(os.path.dirname(HERE), 'events.json')))['ev']
+    for at in [e['t'] + e['dur'] for e in _ev if e['type'] == 'scene' and e['name'] in ('jump', 'jump2')]:   # landing after each jump
         place('fx', boom(1), at, .3)
     # the end: D major rings out
-    e0 = T(17)
+    e0 = T(min(b for b in range(20) if SECTION[b] == 'end'))
     place('drums', crash(1.1, 4.0), e0, .36); place('drums', KICKW[0], e0, .55); place('fx', boom(1), e0, .3)
     for m in harm(81, 'D', 'M9', 4): place('brass', brass(m, BAR * 1.1, .9, 1.1, .015), e0, .2, rng.uniform(-.4, .4))
     for i, m in enumerate(voicing('D', 'M9', 62)): place('pad', pad(m, BAR * 1.5, .55), e0, .18, (-.6, .6)[i % 2])
     for i, m in enumerate(voicing('D', 'M9', 65)): place('keys', epiano(m, BAR * 1.4, .7), e0 + i * .012, .27, -.35 + .18 * i)
     place('bass', bass(bass_root('D'), BAR * 1.2, .9, 'T'), e0, .34)
-    for k, m in enumerate([86, 90, 93, 98, 93, 90]): place('fx', bell(m, 2.6, .4 - .03 * k), T(17, 1 + k * .5), .07, (-.5, .5)[k % 2])
+    for k, m in enumerate([86, 90, 93, 98, 93, 90]): place('fx', bell(m, 2.6, .4 - .03 * k), T(min(b for b in range(20) if SECTION[b] == 'end'), 1 + k * .5), .07, (-.5, .5)[k % 2])
     lead_line(lead, .8, .27)
 
 

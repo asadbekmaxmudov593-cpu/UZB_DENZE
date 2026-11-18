@@ -1,27 +1,23 @@
 1
-00:00:01,150 --> 00:00:04,400
+00:00:01,150 --> 00:00:03,546
 OʻGʻIL: Ota, Ferdinand kim boʻlgan?
 
 2
-00:00:04,500 --> 00:00:09,017
+00:00:03,646 --> 00:00:09,443
 OTA: Aragon qiroli. Ispaniyani aynan u birlashtirgan.
 
 3
-00:00:10,267 --> 00:00:14,983
-OTA: 1469-yilda u Kastiliya malikasi Izabellaga uylandi.
-
-4
-00:00:15,233 --> 00:00:19,683
-OTA: 1492-yilda Granada olinib, Ispaniya birlashdi.
-
-5
-00:00:19,933 --> 00:00:24,450
-OTA: 1498-yilda Vasko da Gama Hindistonga yetib bordi.
-
-6
-00:00:24,700 --> 00:00:29,483
+00:00:10,693 --> 00:00:16,349
 OTA: 1403-yilda ispan elchisi Klavixo Amir Temurga kelgan.
 
-7
-00:00:30,533 --> 00:00:33,317
-OʻGʻIL: Ha, ota, tushundim!
+4
+00:00:16,599 --> 00:00:20,470
+OTA: 1469-yilda u Kastiliya malikasi Izabellaga uylandi.
+
+5
+00:00:20,720 --> 00:00:24,677
+OTA: 1492-yilda Granada olinib, Ispaniya birlashdi.
+
+6
+00:00:24,927 --> 00:00:33,512
+OTA: 1498-yilda Vasko da Gama Hindistonga yetib bordi.

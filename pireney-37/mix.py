@@ -49,10 +49,24 @@ for a, b, name in SC:
         for k in range(4): add(fol, creak(.5), a + 2 + k * 4, .08, .3)
     elif name == 'samarkand':
         bed(a, b, murmur(d), .035); bed(a, b, norm(bp(noise(d), 1500, 6000) * (.7 + .3 * np.sin(2 * np.pi * 3 * t_(d)))), .015)
+from sfx import compress
+vox = np.zeros(N)
+for e in EV:
+    if e['type'] == 'line' and e.get('voice'):
+        y, vsr = sf.read(os.path.join(D, 'voice', e['voice'] + '.wav'))
+        if y.ndim > 1: y = y.mean(1)
+        if vsr != SR: y = resample_poly(y, SR, vsr)
+        y = compress(y / (np.abs(y).max() + 1e-9) * .9, .3, 3.0)
+        i0 = int(e['t'] * SR); i1 = min(N, i0 + len(y)); vox[i0:i1] += y[:i1 - i0]
+from scipy.ndimage import uniform_filter1d
+venv = uniform_filter1d(np.abs(vox), int(.2 * SR)); duck = 1 - .62 * np.clip(venv / (venv.max() + 1e-9) * 4, 0, 1)
 score, sr = sf.read(os.path.join(D, 'music/score.wav'), always_2d=True)
 if sr != SR: score = resample_poly(score, SR, sr, axis=0)
 mus = np.zeros((N, 2)); n = min(N, len(score)); mus[:n] = score[:n]
-out = mus * .75 + fol * .6 + amb
+mus *= duck[:, None]; amb *= (1 - .5 * (1 - duck))[:, None]
+rms = lambda z: np.sqrt((z[np.abs(z) > 1e-4] ** 2).mean()) if np.any(np.abs(z) > 1e-4) else 1
+vg = (rms(mus.mean(1)) * .75 * 3.16) / rms(vox)          # voice about 10 dB over the (ducked) music
+out = mus * .75 + fol * .6 + amb + np.stack([vox, vox], 1) * vg
 out[:, 0] = limit(out[:, 0], .95); out[:, 1] = limit(out[:, 1], .95)
 os.makedirs(os.path.join(D, 'out'), exist_ok=True)
 sf.write(os.path.join(D, 'out/mix.wav'), out.astype(np.float32), SR)

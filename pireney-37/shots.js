@@ -44,7 +44,7 @@ export function road(S) { roadScene(S, S.A.road.day, 'day'); }
 export function road2(S) {
   roadScene(S, S.A.road.sunset, 'sunset');
   const { g, e, t, lt } = S;
-  if (lt > .2) {
+  if (S.t1 - S.t0 > 2.5 && lt > .2) {
     const k = Math.floor((lt - .2) * 12), flick = k < 1 ? 0 : k === 2 ? .3 : k === 4 ? .6 : 1;
     if (flick > 0) {
       g.save(); g.textAlign = 'center'; g.lineJoin = 'round'; g.font = 'italic 900 128px Kanit';

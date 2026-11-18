@@ -26,7 +26,7 @@ function events() {
   const ev = [], add = (type, t, o = {}) => ev.push({ type, t: +t.toFixed(3), ...o });
   add('crton', .02);
   for (const [t0, t1, name] of SHOTS) add('scene', t0, { name, dur: +(t1 - t0).toFixed(3) });
-  for (const L of LINES) add('line', L.t, { who: L.who, d: L.d });
+  for (const L of LINES) add('line', L.t, { who: L.who, d: L.d, voice: L.voice || null });
   return ev.sort((a, b) => a.t - b.t);
 }
 window.EV = events(); window.DUR = DUR; window.render = render; window.TEXTS = t => hudTexts(t);
