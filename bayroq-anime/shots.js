@@ -6,7 +6,7 @@ import { head80 } from './head80.js';
 import { figure } from './figure.js';
 import { flag, pole, rope } from './flag.js';
 import { flare, speedLines, lamp } from './fx.js';
-import { T, VO, speaking } from './story.js';
+import { T, VO } from './story.js';
 
 const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
 const seg = (t, a, b) => clamp((t - a) / (b - a));
@@ -24,7 +24,6 @@ function lightBand(c, x, col, a = .22, w = 520) {
   const gr = c.createLinearGradient(x, 0, x + w, 260); gr.addColorStop(0, rgba(col, 0)); gr.addColorStop(.5, rgba(col, a)); gr.addColorStop(1, rgba(col, 0));
   c.fillStyle = gr; c.fillRect(0, 0, W, H);
 }
-const mouthAt = t => { const v = speaking(t); if (!v) return null; return ['talk', 'oh', 'talk', 'set', 'talk', 'smileopen'][Math.floor((q8(t) - v.t) * 8) % 6]; };
 const blinkAt = t => ((t + .9) % 3.3) < .125;
 
 // 1 — wide: blue dawn, the school, the pole; a small Asadbek walks in carrying the folded flag (small hero, huge painted world)
@@ -53,16 +52,37 @@ export function eyes(S) {
   LWK.k = 1;
   if (k >= 2) { const ga = Math.sin(seg(t, T.open + .3, T.open + .8) * Math.PI); if (ga > 0) flare(e, 960 - 7 * s + (-21 - 6) * s, 540 - 21 * s + 15 * s, .16 * ga, '#ffffff', { ghosts: false, streak: 260, spikes: 4, rot: .78 }); }
 }
-// 3 — medium bust, 3/4, held; lip flaps; a warm light band sweeps across
+// 3 — medium bust, 3/4, held, silent; a warm light band sweeps across; his name card slides in (anime character card)
+export const CARD = { t0: 6.7, t1: 11.9 };
+export function nameCard(g, e, t) {
+  const k = eio(seg(t, CARD.t0, CARD.t0 + .45)) * (1 - eio(seg(t, CARD.t1 - .3, CARD.t1))); if (k <= 0) return;
+  const x0 = -700 + k * 820, y0 = 610;
+  g.save(); g.translate(x0, 0);
+  g.fillStyle = rgba('#0b1030', .78); g.beginPath(); g.moveTo(0, y0); g.lineTo(760, y0); g.lineTo(700, y0 + 250); g.lineTo(0, y0 + 250); g.closePath(); g.fill();
+  g.fillStyle = '#14b8d8'; g.beginPath(); g.moveTo(0, y0 + 168); g.lineTo(726, y0 + 168); g.lineTo(716, y0 + 196); g.lineTo(0, y0 + 196); g.closePath(); g.fill();
+  g.fillStyle = '#22c04a'; g.fillRect(0, y0 + 200, 700, 10); g.fillStyle = '#e83a4a'; g.fillRect(0, y0 + 160, 730, 5);
+  g.font = 'italic 900 132px Kanit'; g.textBaseline = 'alphabetic'; g.lineJoin = 'round';
+  const gr = g.createLinearGradient(0, y0 + 20, 0, y0 + 150); gr.addColorStop(0, '#ffffff'); gr.addColorStop(.5, '#cfefff'); gr.addColorStop(.52, '#5a8ad0'); gr.addColorStop(1, '#e6f8ff');
+  g.strokeStyle = '#08102e'; g.lineWidth = 12; g.strokeText('ASADBEK', 70, y0 + 146);
+  g.fillStyle = gr; g.fillText('ASADBEK', 70, y0 + 146);
+  g.font = '700 40px "Barlow SC"'; g.letterSpacing = '8px'; g.fillStyle = '#0b1030'; g.fillText('54-MAKTAB · 8-E SINF', 78, y0 + 191); g.letterSpacing = '0px';
+  g.restore();
+  e.save(); e.translate(x0, 0); e.fillStyle = rgba('#14b8d8', .5); e.fillRect(0, y0 + 168, 726, 28); e.restore();
+}
+export function cardTexts(t) {
+  if (t < CARD.t0 + .45 || t >= CARD.t1 - .3) return [];
+  return [{ id: 'n1', text: 'ASADBEK', x0: 190, y0: 640, x1: 760, y1: 760 }, { id: 'n2', text: '54-MAKTAB · 8-E SINF', x0: 190, y0: 775, x1: 800, y1: 815 }];
+}
 export function bust(S) {
   const { g, e, A, t, lt } = S, P = PAL.dawn;
   g.save(); g.filter = 'blur(5px)'; g.drawImage(A.court.dawn.c, -300, -260, 2400, 1350); g.restore();
   e.save(); e.filter = 'blur(5px)'; e.drawImage(A.court.dawn.e, -300, -260, 2400, 1350); e.restore();
-  const tq = q8(t), m = mouthAt(tq) || 'smile';
+  const m = 'smile';
   const s = 2.35 + lt * .02, bob = Math.round(Math.sin(q12(t) * 5) * 2);
   celLayer(S, c => { c.translate(1180, 420 + bob); c.scale(s, s);
     head80(c, P, { view: 'q', expr: 'smile', mouth: m, open: blinkAt(t) ? 0 : .9, lid: .12, ponytail: false, headset: false, blush: .06, wind: .15, ph: (Math.floor(t * 12) % 4) / 4, rim: { c: '#ffb070', d: [2, 1.2] } }); },
     c => lightBand(c, -800 + lt * 520, '#ffd28a', .18, 700));
+  nameCard(g, e, t);
 }
 // 4 — title: chrome letters glowing through the dawn
 export function title(S) {
@@ -85,15 +105,15 @@ export function title(S) {
     e.strokeStyle = rgba(stroke2, .9 * flick); e.lineWidth = size * .07; e.strokeText(txt, W / 2, y); e.restore();
   };
   if (flick > 0) {
-    chrome('18-NOYABR', 470, 230, '#14b8d8');
-    chrome('DAVLAT BAYROGʻI KUNI', 650, 110, '#2ad06a');
-    g.save(); g.textAlign = 'center'; g.font = '600 38px "Barlow SC"'; g.fillStyle = rgba('#ffe0ff', .85); g.letterSpacing = '14px'; g.fillText('OʻZBEKISTON  ·  1991', W / 2, 760); g.letterSpacing = '0px'; g.restore();
+    chrome('DAVLAT BAYROGʻI', 470, 190, '#14b8d8');
+    chrome('KUNI', 660, 170, '#2ad06a');
+    g.save(); g.textAlign = 'center'; g.font = '600 40px "Barlow SC"'; g.fillStyle = rgba('#ffe0ff', .9); g.letterSpacing = '16px'; g.fillText('OʻZBEKISTON RESPUBLIKASI', W / 2, 770); g.letterSpacing = '0px'; g.restore();
   }
   const sx = -300 + seg(lt, .2, 1.3) * 2600;
   e.save(); e.globalCompositeOperation = 'lighter';
-  const sg = e.createLinearGradient(sx - 120, 0, sx + 120, 0); sg.addColorStop(0, rgba('#ffffff', 0)); sg.addColorStop(.5, rgba('#ffffff', .7)); sg.addColorStop(1, rgba('#ffffff', 0));
+  const sg = e.createLinearGradient(sx - 120, 0, sx + 120, 0); sg.addColorStop(0, rgba('#ffffff', 0)); sg.addColorStop(.5, rgba('#ffffff', .28)); sg.addColorStop(1, rgba('#ffffff', 0));
   e.fillStyle = sg; e.fillRect(0, 280, W, 420); e.restore();
-  const gl = Math.sin(seg(lt, 1.4, 2.0) * Math.PI); if (gl > 0) flare(e, 1420, 300, .5 * gl, '#ffffff', { ghosts: false, streak: 500, spikes: 4, rot: .78 });
+  const gl = Math.sin(seg(lt, 1.4, 2.0) * Math.PI); if (gl > 0) flare(e, 1530, 330, .22 * gl, '#ffffff', { ghosts: false, streak: 360, spikes: 4, rot: .78 });
 }
 // 5 — low angle at the base of the pole: the rope, hand over hand; the flag starts to climb
 export function base(S) {
@@ -117,7 +137,7 @@ export function crane(S) {
   g.drawImage(Sk.c, 0, -camY); e.drawImage(Sk.e, 0, -camY);
   pole(g, P, px, -100, H + 100, 26); rope(g, P, px + 22, -100, H + 100, 0);
   const fy = 330 + Math.sin(lt * .9) * 10, ph = q12(t) * .55;
-  const M = flag(g, e, P, { x: px + 12, y: fy, w: 640, h: 320, wind: .68, ph, lw: 2.4 });
+  const M = flag(g, e, P, { x: px + 12, y: fy, w: 640, h: 320, wind: .82, ph, lw: 2.4 });
   // light band over the colour being named
   const v = VO.find(v => v.stripe && t >= v.t - .1 && t < v.t + v.d + .5);
   if (v) {
@@ -145,9 +165,9 @@ export function peak(S) {
   if (lt < 2 / 24) {                                           // impact frame: inverted silhouette over radial lines
     g.fillStyle = '#fff6e0'; g.fillRect(0, 0, W, H);
     speedLines(g, 1, { type: 'radial', cx: 380, cy: 900, col: '#ff8a3a', a: .9, n: 120, wmul: 1.3 });
-    const Pk = { ...P, fblue: { f: '#140a1a', l: '#140a1a' }, fwhite: { f: '#140a1a', l: '#140a1a' }, fgreen: { f: '#140a1a', l: '#140a1a' }, fred: { f: '#140a1a', l: '#140a1a' } };
+    const K = { f: '#140a1a', s: '#140a1a', h: '#140a1a', l: '#140a1a' }, Pk = { ...P, fblue: K, fwhite: K, fgreen: K, fred: K };
     pole(g, { ...P, pole: { f: '#140a1a', s: '#140a1a', h: '#140a1a', l: '#140a1a' }, gold: { f: '#140a1a', s: '#140a1a', h: '#140a1a', l: '#140a1a' } }, 700, 100, 1200, 30);
-    flag(g, null, Pk, { x: 712, y: 150, w: 1060, h: 530, wind: .8, ph: .2 });
+    flag(g, null, Pk, { x: 712, y: 150, w: 1060, h: 530, wind: .8, ph: .2, warm: '#140a1a' });
     return;
   }
   vgrad(g, 0, 0, W, H, [[0, '#2a5ab0'], [.55, '#86b6ea'], [.9, '#ffd8a0'], [1, '#ffb070']]);

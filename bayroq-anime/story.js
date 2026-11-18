@@ -8,9 +8,8 @@ export const SHOTS = [
 ];
 export const shotAt = t => SHOTS.find(s => t >= s[0] && t < s[1]) || SHOTS[SHOTS.length - 1];
 export const T = { walk: [.6, 3.7], open: 4.5, pull: [16.4, 38], limp: 38, silence: [43.5, 44], sun: 44, title: 12.15, endTitle: 57.0, wave: [52.2, 56] };
+// captions (on the tape). Asadbek does not speak: his name is a character card in the bust shot (shots.js).
 export const VO = [
-  { id: 'v1', t: 6.4, d: 3.3, text: 'Assalomu alaykum! Men Asadbek, 54-maktabning 8-E sinfida oʻqiyman.' },
-  { id: 'v2', t: 11.88, d: 1.9, text: 'Bugun — 18-noyabr, Davlat bayrogʻimiz kuni!' },
   { id: 'v3', t: 16.3, d: 3.0, text: '1991-yil 18-noyabrda Davlat bayrogʻi qonuni qabul qilingan.' },
   { id: 'v4', t: 21.35, d: 2.6, text: 'Moviy — mangu osmon va obihayot ramzi.', stripe: [0, 80] },
   { id: 'v5', t: 25.05, d: 2.2, text: 'Oq — tinchlik va poklik ramzi.', stripe: [85, 165] },
@@ -19,7 +18,6 @@ export const VO = [
   { id: 'v8', t: 35.45, d: 2.2, text: 'Yarim oy — mustaqillik ramzi.', stripe: [0, 80], canton: true },
   { id: 'v8b', t: 38.7, d: 2.6, text: '12 yulduz — qadimiy quyosh yil hisobi.' },
   { id: 'v9', t: 53.0, d: 2.2, text: 'Bayrogʻimiz — gʻururimiz!' },
-  { id: 'v10', t: 56.15, d: 2.0, text: 'Bayramingiz muborak!' },
 ];
 // subtitle spans: hold ≥ max(1.8 s, speech + 0.6 s, reading time); a line yields to the next
 export function subSpans() {
@@ -29,4 +27,4 @@ export function subSpans() {
   return S;
 }
 // is Asadbek speaking at t (for lip flaps)?
-export const speaking = t => VO.find(v => t >= v.t && t < v.t + v.d);
+export const speaking = () => null;   // he does not speak

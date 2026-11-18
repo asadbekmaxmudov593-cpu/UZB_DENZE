@@ -29,7 +29,7 @@ function render(t) {
   if (qs.get('nosub') || qs.get('test')) ov.clearRect(0, 0, W, H); else hud(ov, t);
   const raw = qs.get('raw') || qs.get('test');
   post.render(sc, gc, Math.round(t * 24), ovc, raw ? { bloom: 0, halo: 0, soft: 0, flick: 0, lift: 0, contrast: 0, fade: 0, sat: 1, tint: [1, 1, 1], scan: 0, grille: 0, bleed: 1, rshift: 0, glow: 0, corner: 0, noiseA: 0, power: 1, track: 0, expo: 1 }
-    : { power: Math.min(1, t / .6), track: 0 });
+    : { power: Math.min(1, t / .6), track: 0, scan: .07, grille: .015, bleed: 3, rshift: .6, noiseA: .006, soft: .08, glow: .2, corner: .16, bloom: .7, halo: .12, sat: 1.08 });   // a cleaner, sharper tape
 }
 function events() {
   const ev = [], add = (type, t, o = {}) => ev.push({ type, t: +t.toFixed(3), ...o });
@@ -40,9 +40,10 @@ function events() {
   add('title', T.title); add('impact', T.sun); add('gust', T.sun, { d: 4 }); add('flutter', T.sun, { d: DUR - T.sun });
   add('birds', 45, { d: DUR - 45 }); add('endtitle', T.endTitle);
   for (const v of VO) add('line', v.t, { id: v.id, d: v.d });
+  add('card', SH.CARD.t0);
   return ev.sort((a, b) => a.t - b.t);
 }
 window.EV = events(); window.DUR = DUR; window.render = render;
-window.TEXTS = t => hudTexts(t);
+window.TEXTS = t => [...hudTexts(t), ...SH.cardTexts(t)];
 render(+(qs.get('t') ?? 8));
 window.READY = true;

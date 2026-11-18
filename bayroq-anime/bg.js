@@ -13,8 +13,19 @@ function sky(g, e, M, w, y0, y1, seed) {
   vgrad(g, 0, y0, w, y1 - y0, M.sky.map(([o, c]) => [o, c]));
   const R = rng(seed);
   if (M.stars) for (let i = 0; i < 260; i++) { const y = y0 + R() * (y1 - y0) * .6, a = M.stars * (1 - (y - y0) / ((y1 - y0) * .6)) * (.3 + R() * .7); g.fillStyle = rgba('#ffffff', a); g.fillRect(R() * w, y, R() < .1 ? 3 : 2, R() < .1 ? 3 : 2); }
-  for (let i = 0; i < 9; i++) { const x = R() * w, y = y0 + (y1 - y0) * (.45 + R() * .4); airbrush(g, x, y, 260 + R() * 260, 34 + R() * 30, mix(M.sky[2][1], '#ffffff', .25), .22); }   // airbrushed cloud bands, lit from below
+  for (let i = 0; i < 9; i++) { const x = R() * w, y = y0 + (y1 - y0) * (.45 + R() * .4); airbrush(g, x, y, 260 + R() * 260, 34 + R() * 30, mix(M.sky[2][1], '#ffffff', .25), .16); }   // thin airbrushed bands
+  const body = M.stars ? mix(M.sky[1][1], '#2a1e4a', .35) : mix('#ffffff', M.sky[1][1], .18), lit = M.stars ? M.glow : '#fff2d8';
+  for (let i = 0; i < 7; i++) cloud(g, e, R() * w, y0 + (y1 - y0) * (.32 + R() * .48), 70 + R() * 90, body, lit, R, M.stars ? .35 : .1);
   airbrush(e, w * .27, y1, 700, 260, M.glow, .55); airbrush(g, w * .27, y1, 800, 300, M.glow, .35);
+}
+// a painted cumulus: puffs on top, flat base, the underside lit by the low sun (and a little glow on the emissive plate at dawn)
+function cloud(g, e, x, y, s, body, lit, R, glow) {
+  for (let k = 0; k < 18; k++) {                               // puffs: a rounded heap, bigger in the middle
+    const u = (R() - .5) * 2, px = x + u * s * 1.7, r = s * (.32 + .45 * (1 - Math.abs(u)) * R() + .12), py = y - r * (.35 + R() * .5);
+    airbrush(g, px, py, r, r * .9, body, .32, .45);
+  }
+  for (let k = 0; k < 6; k++) { const px = x + (R() - .5) * s * 2.4, r = s * (.3 + R() * .3); airbrush(g, px, y - r * .1, r * 1.1, r * .28, lit, .3, .55); }
+  if (glow) airbrush(e, x, y + s * .1, s * 1.6, s * .3, lit, glow, .6);
 }
 function ridge(g, M, w, base, amp, seed, col, snow) {
   const R = rng(seed), pts = [[0, base + 200]];
@@ -22,6 +33,14 @@ function ridge(g, M, w, base, amp, seed, col, snow) {
   for (let x = 0; x <= w; x += 40) { y = Math.max(base - amp, Math.min(base + 20, y + (R() - .5) * amp * .55)); pts.push([x, y]); }
   pts.push([w, base + 200]);
   g.fillStyle = col; g.fill(poly(pts));
+  g.save(); g.clip(poly(pts));                                // faceted light: slopes facing the sun (left) are lighter, gullies darker
+  for (let i = 1; i < pts.length - 2; i++) {
+    const [x0, y0] = pts[i], [x1, y1] = pts[i + 1];
+    g.fillStyle = y1 > y0 ? rgba('#ffffff', .1) : rgba('#000000', .14);
+    g.fill(poly([[x0, y0], [x1, y1], [x1 + 30, y1 + 140], [x0 + 30, y0 + 140]]));
+  }
+  vgrad(g, 0, base - amp, w, amp + 220, [[0, rgba('#ffffff', 0)], [1, rgba(M.sky[3][1], .25)]]);   // aerial haze toward the foot
+  g.restore();
   if (snow) { g.save(); g.clip(poly(pts)); g.fillStyle = snow; for (let i = 1; i < pts.length - 2; i++) { const [x, yy] = pts[i]; if (yy < base - amp * .55) g.fill(poly([[x - 26, yy + 30], [x, yy - 2], [x + 30, yy + 34], [x + 10, yy + 24]])); } g.restore(); }
 }
 function school(g, e, M, x0, x1, top, base) {
@@ -35,7 +54,11 @@ function school(g, e, M, x0, x1, top, base) {
     if (lit) { e.fillStyle = rgba(M.win, .5); e.fillRect(x, y, 44, 48); }
     else if (!M.stars) { g.fillStyle = rgba('#ffffff', .35); g.fillRect(x + 4, y + 4, 10, 40); }
     g.fillStyle = rgba('#000000', .3); g.fillRect(x, y + 46, 44, 5);
+    g.fillStyle = rgba(M.bldL, .9); g.fillRect(x + 20, y, 4, 48); g.fillRect(x, y + 20, 44, 3);   // window frames
+    g.fillStyle = mix(M.bld, '#000000', .2); g.fillRect(x - 4, y + 50, 52, 4);                   // sill
   }
+  g.fillStyle = mix(M.bld, '#000000', .18); for (let row = 1; row < 3; row++) g.fillRect(x0, top + 14 + row * 76, x1 - x0, 4);   // floor lines
+  g.fillStyle = mix(M.bldL, '#ffffff', .2); for (let k = 0; k < 4; k++) g.fillRect(890 - k * 14, base - 8 - k * 8, 140 + k * 28, 8);   // entrance steps
   // entrance portico: columns + sign
   g.fillStyle = mix(M.bldL, '#ffffff', .15); g.fillRect(850, top - 40, 220, base - top + 40);
   g.fillStyle = mix(M.bld, '#000000', .3); for (let k = 0; k < 4; k++) g.fillRect(866 + k * 56, top + 50, 16, base - top - 50);
@@ -45,8 +68,13 @@ function school(g, e, M, x0, x1, top, base) {
   if (M.stars) { e.font = '700 30px "Barlow SC"'; e.textAlign = 'center'; e.textBaseline = 'middle'; e.fillStyle = rgba('#ffd98a', .7); e.fillText('54-MAKTAB', 960, top - 5); }
 }
 function poplar(g, M, x, base, h, w) {
-  g.fillStyle = M.tree; g.beginPath(); g.ellipse(x, base - h / 2, w / 2, h / 2, 0, 0, TAU); g.fill();
-  g.fillStyle = M.treeL; g.beginPath(); g.ellipse(x - w * .14, base - h * .55, w * .26, h * .4, 0, 0, TAU); g.fill();
+  g.fillStyle = mix(M.tree, '#000000', .3); g.fillRect(x - 3, base - h * .15, 6, h * .15);
+  g.fillStyle = M.tree; g.beginPath(); g.ellipse(x, base - h / 2 - h * .05, w / 2, h / 2, 0, 0, TAU); g.fill();
+  const R = rng(Math.round(x * 7 + h));
+  for (let k = 0; k < 70; k++) {                              // leaf clusters: lit on the sun side, dark on the far side
+    const a = R() * TAU, rr = Math.sqrt(R()), px = x + Math.cos(a) * rr * w * .45, py = base - h * .55 + Math.sin(a) * rr * h * .45, lit = Math.cos(a) < -.1 && R() < .8;
+    g.fillStyle = lit ? M.treeL : mix(M.tree, '#000000', .25); g.beginPath(); g.ellipse(px, py, w * .09, h * .035, a * .3, 0, TAU); g.fill();
+  }
 }
 // the courtyard (1920 × 1080): sky, mountains, school, poplars, paved ground with the flagpole's round base
 export function courtyard(mode) {

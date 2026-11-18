@@ -53,3 +53,13 @@ City-pop / anime-opening pop at 120 BPM: FM electric piano, slap bass, synth bra
 - Lines were retimed so that, with no voice yet, every subtitle stays on screen long enough to read (non-space characters ÷ 15 + 1.6 s).
   The meanings now start as the flag leaves the ground (21.3 s) and the last one (12 stars) runs into the stillness shot.
 - The rope shot puts Asadbek beside the pole, the rope in his hands. The ending cranes up less, so the horizon stays in frame, and the end title sits over the school roof.
+
+## 8. Version 2 (after the user's notes)
+
+- Asadbek does not speak: no lip flaps. His introduction is an 80s character card in the bust shot ("ASADBEK / 54-MAKTAB · 8-E SINF");
+  the facts are captions on the tape, written in the third person.
+- The flag is painted cloth instead of a flat cel: a grid of small quads lit by the slope of the wave (diagonal folds, a ripple,
+  a hem with grommets, a soft sheen), the crescent and stars lit with the cloth. It no longer reads as a logo.
+- Title: "DAVLAT BAYROGʻI KUNI" with "Oʻzbekiston Respublikasi" under it (the big date is gone; the date stays in the captions).
+- Graphics: fluffy painted clouds with lit undersides, faceted mountains with haze, poplars with leaf clusters, window frames and
+  steps on the school, a brushed-metal pole; the tape/CRT pass turned down for a sharper picture.
