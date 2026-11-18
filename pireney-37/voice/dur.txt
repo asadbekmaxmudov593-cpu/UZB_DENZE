@@ -1,7 +1,7 @@
-dad_1403.wav 5.005938
-dad_1469.wav 3.220708
-dad_1492.wav 3.307146
-dad_1498.wav 7.935250
-dad_aragon.wav 5.146979
-son1.wav 1.745896
-son2.wav 1.382729
+dad_1403.wav 4.923813
+dad_1469.wav 6.061729
+dad_1492.wav 4.787021
+dad_1498.wav 5.278500
+dad_aragon.wav 3.787771
+son1.wav 2.328750
+son2.wav 1.893271

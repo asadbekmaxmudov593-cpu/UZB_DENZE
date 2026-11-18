@@ -1,32 +1,37 @@
 [
  {
   "t0": 1.15,
-  "t1": 3.546,
+  "t1": 3.979,
   "text": "OʻGʻIL: Ota, Ferdinand kim boʻlgan?"
  },
  {
-  "t0": 3.646,
-  "t1": 9.443,
+  "t0": 4.029,
+  "t1": 8.317,
   "text": "OTA: Aragon qiroli. Ispaniyani aynan u birlashtirgan."
  },
  {
-  "t0": 10.693,
-  "t1": 16.349,
+  "t0": 9.517,
+  "t1": 14.941,
   "text": "OTA: 1403-yilda ispan elchisi Klavixo Amir Temurga kelgan."
  },
  {
-  "t0": 16.599,
-  "t1": 20.47,
-  "text": "OTA: 1469-yilda u Kastiliya malikasi Izabellaga uylandi."
+  "t0": 15.141,
+  "t1": 21.703,
+  "text": "OTA: 1469-yilda Ferdinand Kastiliya malikasi Izabellaga uylandi."
  },
  {
-  "t0": 20.72,
-  "t1": 24.677,
+  "t0": 21.903,
+  "t1": 27.19,
   "text": "OTA: 1492-yilda Granada olinib, Ispaniya birlashdi."
  },
  {
-  "t0": 24.927,
-  "t1": 33.512,
+  "t0": 27.39,
+  "t1": 33.169,
   "text": "OTA: 1498-yilda Vasko da Gama Hindistonga yetib bordi."
+ },
+ {
+  "t0": 34.169,
+  "t1": 36.562,
+  "text": "OʻGʻIL: Ha, ota, tushundim!"
  }
 ]
